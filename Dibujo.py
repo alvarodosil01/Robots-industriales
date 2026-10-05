@@ -1,27 +1,26 @@
 from pyniryo import NiryoRobot, PoseObject
 import math
 
-
 # -------------------------------------------------
 # CONEXIÓN
 # -------------------------------------------------
+robot_ip_address = '10.10.10.10'
+# Connect to robot & calibrate
+robot = NiryoRobot(robot_ip_address)
 
-IP_ROBOT = "IP_DEL_ROBOT"
+robot.calibrate_auto()
+robot.clear_collision_detected()
 
-
-
-# -------------------------------------------------
-# POSE DE SEGURIDAD
-# -------------------------------------------------
-
-POSE_SEGURA = PoseObject(
-    0.105,
-    -0.002,
-    0.140,
-    0.035,
-    0.635,
-    -0.042
+# TCP DEL ROTULADOR
+robot.set_tcp(
+    TCP_X,
+    TCP_Y,
+    TCP_Z,
+    TCP_ROLL,
+    TCP_PITCH,
+    TCP_YAW
 )
+robot.set_arm_max_velocity(45)
 
 
 # Orientación del rotulador mientras dibuja
@@ -37,7 +36,8 @@ YAW = -3.209
 def cuadrado():
 
     # Nos colocamos encima del papel
-    robot.move(POSE_SEGURA)
+    robot.move_to_home_pose
+
 
     # Primer punto
     robot.move(
@@ -50,7 +50,7 @@ def cuadrado():
     # Línea superior
     robot.move(
         PoseObject(
-            0.315, -0.006, 0.0005,
+            0.290, -0.006, 0.0005,
             ROLL, PITCH, YAW
         ),
         linear=True
@@ -58,7 +58,7 @@ def cuadrado():
 
     robot.move(
         PoseObject(
-            0.415, -0.006, 0.0005,
+            0.365, -0.006, 0.0005,
             ROLL, PITCH, YAW
         ),
         linear=True
@@ -67,7 +67,7 @@ def cuadrado():
     # Línea derecha
     robot.move(
         PoseObject(
-            0.415, -0.106, 0.0005,
+            0.365, -0.081, 0.0005,
             ROLL, PITCH, YAW
         ),
         linear=True
@@ -75,7 +75,7 @@ def cuadrado():
 
     robot.move(
         PoseObject(
-            0.415, -0.206, 0.0005,
+            0.365, -0.156, 0.0005,
             ROLL, PITCH, YAW
         ),
         linear=True
@@ -84,7 +84,7 @@ def cuadrado():
     # Línea inferior
     robot.move(
         PoseObject(
-            0.315, -0.206, 0.0005,
+            0.290, -0.156, 0.0005,
             ROLL, PITCH, YAW
         ),
         linear=True
@@ -92,7 +92,7 @@ def cuadrado():
 
     robot.move(
         PoseObject(
-            0.215, -0.206, 0.0005,
+            0.215, -0.156, 0.0005,
             ROLL, PITCH, YAW
         ),
         linear=True
@@ -101,7 +101,7 @@ def cuadrado():
     # Lado izquierdo
     robot.move(
         PoseObject(
-            0.215, -0.106, -0.003,
+            0.215, -0.081, -0.003,
             ROLL, PITCH, YAW
         ),
         linear=True
@@ -115,7 +115,8 @@ def cuadrado():
         linear=True
     )
 
-    robot.move(POSE_SEGURA)
+    robot.move_to_home_pose
+
 
 
 # -------------------------------------------------
@@ -124,7 +125,8 @@ def cuadrado():
 
 def triangulo():
 
-    robot.move(POSE_SEGURA)
+    robot.move_to_home_pose
+
 
     # Primer vértice
     robot.move(
@@ -137,7 +139,7 @@ def triangulo():
     # Línea superior
     robot.move(
         PoseObject(
-            0.315, -0.006, 0.0005,
+            0.290, -0.006, 0.0005,
             ROLL, PITCH, YAW
         ),
         linear=True
@@ -145,7 +147,7 @@ def triangulo():
 
     robot.move(
         PoseObject(
-            0.415, -0.006, 0.001,
+            0.365, -0.006, 0.001,
             ROLL, PITCH, YAW
         ),
         linear=True
@@ -154,7 +156,7 @@ def triangulo():
     # Diagonal
     robot.move(
         PoseObject(
-            0.215, -0.206, -0.005,
+            0.215, -0.156, -0.005,
             ROLL, PITCH, YAW
         ),
         linear=True
@@ -163,7 +165,7 @@ def triangulo():
     # Subimos por el lado izquierdo
     robot.move(
         PoseObject(
-            0.215, -0.106, -0.003,
+            0.215, -0.081, -0.003,
             ROLL, PITCH, YAW
         ),
         linear=True
@@ -177,7 +179,8 @@ def triangulo():
         linear=True
     )
 
-    robot.move(POSE_SEGURA)
+    robot.move_to_home_pose
+
 
 
 # -------------------------------------------------
@@ -186,7 +189,8 @@ def triangulo():
 
 def circulo():
 
-    robot.move(POSE_SEGURA)
+    robot.move_to_home_pose
+
 
     # Centro aproximado de vuestra zona de dibujo
     centro_x = 0.315
@@ -199,7 +203,7 @@ def circulo():
     puntos = 50
 
     # Altura provisional
-    z = -0.001
+    z = 0.
 
     for i in range(puntos + 1):
 
@@ -225,7 +229,8 @@ def circulo():
         else:
             robot.move(pose, linear=True)
 
-    robot.move(POSE_SEGURA)
+        robot.move_to_home_pose
+
 
 
 # -------------------------------------------------
