@@ -70,8 +70,8 @@ def circulo(robot):
     robot.set_arm_max_velocity(50)
     # Calcula una circunferencia en el plano XY y reúne sus poses en una trayectoria.
     # El punto de partida está en el extremo de mayor X; Z fija la altura en metros.
-    inicio_x = 0.37
-    inicio_y = -0.048
+    inicio_x = 0.39
+    inicio_y = -0.038
     z = 0.0037
 
     # Ángulos de orientación del rotulador, en radianes, constantes durante el dibujo.
@@ -83,22 +83,22 @@ def circulo(robot):
     radio = 0.075
     centro_x = inicio_x - radio
     centro_y = inicio_y
-    # Divide la vuelta en 150 tramos; se guardan 151 poses contando el cierre.
+    # Divide la vuelta en 60 tramos; se guardan 61 poses contando el cierre.
     puntos = 60
     trayectoria = []
 
-    for i in range(puntos + 1):
+    for i in range(puntos + 2):
         # Convierte el índice en un ángulo de 0 a 2*pi radianes (una vuelta completa).
         angulo = 2 * math.pi * i / puntos
 
-        # Usa las mismas coordenadas al empezar y terminar para cerrar el círculo.
-        if i == 0 or i == (puntos):
-            x = inicio_x
-            y = inicio_y
-        else:
+        # # Usa las mismas coordenadas al empezar y terminar para cerrar el círculo.
+        # if i == 0 or i == puntos:
+        #     x = inicio_x
+        #     y = inicio_y
+        # else:
             # Coseno y seno dan los desplazamientos X e Y respecto al centro.
-            x = centro_x + radio * math.cos(angulo)
-            y = centro_y + radio * math.sin(angulo)
+        x = centro_x + radio * math.cos(angulo)
+        y = centro_y + radio * math.sin(angulo)
 
         # Combina cada posición calculada con la altura y orientación constantes.
         pose = PoseObject(x, y, z, roll, pitch, yaw)
@@ -113,10 +113,11 @@ def circulo(robot):
         trayectoria.append(pose)
 
     # Primero coloca el robot en el punto de partida de la circunferencia.
-    # robot.move(trayectoria[0])
-    # Ejecuta todas las poses juntas, con 1 mm de suavizado entre puntos.
+    # Ejecuta todas las poses juntas, con 0.75 mm de suavizado entre puntos.
     # Esto reduce las frenadas de los movimientos separados y puede variar algo el trazo.
     robot.execute_trajectory(trayectoria, dist_smoothing=0.00075)
+    print("Círculo: trayectoria terminada; regresando a home...")
+   
 
     # Una vez completado el círculo, regresa a la posición home del robot.
     robot.move_to_home_pose()
@@ -150,6 +151,10 @@ if __name__ == "__main__":
             triangulo(robot)
 
         elif figura == "circulo":
+            circulo(robot)
+        elif figura == "todos":
+            cuadrado(robot)
+            triangulo(robot)
             circulo(robot)
 
         else:
