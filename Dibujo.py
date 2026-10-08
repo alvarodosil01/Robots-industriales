@@ -17,76 +17,23 @@ robot_ip_address = '10.10.13.190'
 def cuadrado(robot):
     # Inicio del dibujo.
 
-    robot.move(
-        PoseObject(
-            0.412, 0.089, 0.14,
-            0.092, -0.041, 0.118
-        )
-    )
+    robot.move(PoseObject(0.412, 0.089, 0.14, 0.092, -0.041, 0.118))  # Posición inicial
 
-    robot.move(
-        PoseObject(
-            0.337, 0.089, 0.13,
-            0.092, -0.041, 0.118
-        ),
-        linear=True
-    )
+    robot.move(PoseObject(0.337, 0.089, 0.13, 0.092, -0.041, 0.118), linear=True)  # Línea 1.5
 
-    robot.move(
-        PoseObject(
-            0.262, 0.089, 0.13,
-            0.092, -0.041, 0.118
-        ),
-        linear=True
-    )
+    robot.move(PoseObject(0.262, 0.089, 0.13, 0.092, -0.041, 0.118), linear=True)  # Línea 1
 
-    robot.move(
-        PoseObject(
-            0.262, 0.014, 0.13,
-            0.092, -0.041, 0.118
-        ),
-        linear=True
-    )
+    robot.move(PoseObject(0.262, 0.014, 0.13, 0.092, -0.041, 0.118), linear=True)  # Línea 2.5
 
-    robot.move(
-        PoseObject(
-            0.262, -0.061, 0.14,
-            0.092, -0.041, 0.118
-        ),
-        linear=True
-    )
+    robot.move(PoseObject(0.262, -0.061, 0.14, 0.092, -0.041, 0.118), linear=True)  # Línea 2
 
-    robot.move(
-        PoseObject(
-            0.337, -0.061, 0.14,
-            0.092, -0.041, 0.118
-        ),
-        linear=True
-    )
+    robot.move(PoseObject(0.337, -0.061, 0.14, 0.092, -0.041, 0.118), linear=True)  # Línea 3.5
 
-    robot.move(
-        PoseObject(
-            0.412, -0.061, 0.14,
-            0.092, -0.041, 0.118
-        ),
-        linear=True
-    )
+    robot.move(PoseObject(0.412, -0.061, 0.14, 0.092, -0.041, 0.118), linear=True)  # Línea 3
 
-    robot.move(
-        PoseObject(
-            0.412, 0.014, 0.14,
-            0.092, -0.041, 0.118
-        ),
-        linear=True
-    )
+    robot.move(PoseObject(0.412, 0.014, 0.14, 0.092, -0.041, 0.118), linear=True)  # Línea 4.5
 
-    robot.move(
-        PoseObject(
-            0.412, 0.089, 0.14,
-            0.092, -0.041, 0.118
-        ),
-        linear=True
-    )
+    robot.move(PoseObject(0.412, 0.089, 0.14, 0.092, -0.041, 0.118), linear=True)  # Línea 4
 
     robot.move_to_home_pose()
 
@@ -94,52 +41,17 @@ def cuadrado(robot):
 def triangulo(robot):
     # Inicio del dibujo.
 
-    robot.move(
-        PoseObject(
-            0.412, 0.089, 0.14,
-            0.092, -0.041, 0.118
-        )
-    )
+    robot.move(PoseObject(0.412, 0.089, 0.14, 0.092, -0.041, 0.118))  # Posición inicial
 
-    robot.move(
-        PoseObject(
-            0.337, 0.089, 0.14,
-            0.092, -0.041, 0.118
-        ),
-        linear=True
-    )
+    robot.move(PoseObject(0.337, 0.089, 0.14, 0.092, -0.041, 0.118), linear=True)  # Línea 1.5
 
-    robot.move(
-        PoseObject(
-            0.262, 0.089, 0.13,
-            0.092, -0.041, 0.118
-        ),
-        linear=True
-    )
+    robot.move(PoseObject(0.262, 0.089, 0.13, 0.092, -0.041, 0.118), linear=True)  # Línea 1
 
-    robot.move(
-        PoseObject(
-            0.412, -0.061, 0.14,
-            0.092, -0.041, 0.118
-        ),
-        linear=True
-    )
+    robot.move(PoseObject(0.412, -0.061, 0.14, 0.092, -0.041, 0.118), linear=True)  # Línea 2
 
-    robot.move(
-        PoseObject(
-            0.412, 0.014, 0.14,
-            0.092, -0.041, 0.118
-        ),
-        linear=True
-    )
+    robot.move(PoseObject(0.412, 0.014, 0.14, 0.092, -0.041, 0.118), linear=True)  # Línea 3.5
 
-    robot.move(
-        PoseObject(
-            0.412, 0.089, 0.14,
-            0.092, -0.041, 0.118
-        ),
-        linear=True
-    )
+    robot.move(PoseObject(0.412, 0.089, 0.14, 0.092, -0.041, 0.118), linear=True)  # Línea 3
 
     robot.move_to_home_pose()
 
