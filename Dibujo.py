@@ -24,48 +24,40 @@ robot_ip_address = '10.10.13.190'
 # Cuadrado: abajo, derecha, arriba, izquierda (plano XY).
 
 def cuadrado(robot):
+    robot.set_arm_max_velocity(35)
     # Dibuja los cuatro lados del cuadrado, pasando por un punto medio en cada lado.
     # PoseObject contiene la posición X, Y, Z (metros) y la orientación (radianes).
     # linear=True realiza cada tramo en línea recta hasta la pose indicada.
     # Los números con .5 señalan puntos medios; los enteros, finales de lado.
-
-    robot.move(PoseObject(0.412, 0.089, 0.14, 0.092, -0.041, 0.118))  # Posición inicial
-
-    robot.move(PoseObject(0.337, 0.089, 0.13, 0.092, -0.041, 0.118), linear=True)  # Línea 1.5
-
-    robot.move(PoseObject(0.262, 0.089, 0.13, 0.092, -0.041, 0.118), linear=True)  # Línea 1
-
-    robot.move(PoseObject(0.262, 0.014, 0.13, 0.092, -0.041, 0.118), linear=True)  # Línea 2.5
-
-    robot.move(PoseObject(0.262, -0.061, 0.14, 0.092, -0.041, 0.118), linear=True)  # Línea 2
-
-    robot.move(PoseObject(0.337, -0.061, 0.14, 0.092, -0.041, 0.118), linear=True)  # Línea 3.5
-
-    robot.move(PoseObject(0.412, -0.061, 0.14, 0.092, -0.041, 0.118), linear=True)  # Línea 3
-
-    robot.move(PoseObject(0.412, 0.014, 0.14, 0.092, -0.041, 0.118), linear=True)  # Línea 4.5
-
-    robot.move(PoseObject(0.412, 0.089, 0.14, 0.092, -0.041, 0.118), linear=True)  # Línea 4
-
+    
+    robot.move(PoseObject(0.22, -0.061, 0.004, 0.042, -0.021, 0.058))  # Línea 2  3
+    robot.move(PoseObject(0.30, -0.061, 0.004, 0.042, -0.021, 0.058), linear=True)  # Línea 3  2 
+    robot.move(PoseObject(0.30, 0.019, 0.0038, 0.042, -0.021, 0.058), linear=True) # Posición inicial  1
+    robot.move(PoseObject(0.22, 0.019, 0.003, 0.042, -0.021, 0.058), linear=True)  # Línea 1   4
+    robot.move(PoseObject(0.22, -0.061, 0.004, 0.042, -0.021, 0.058), linear=True)  # Línea 2  3
     robot.move_to_home_pose()
+
+"""
+    robot.move(PoseObject(0.412, 0.089, 0.14, 0.042, -0.021, 0.058))  # Posición inicial  1
+    robot.move(PoseObject(0.262, 0.089, 0.13, 0.042, -0.021, 0.058), linear=True)  # Línea 1   2
+    robot.move(PoseObject(0.262, -0.061, 0.14, 0.042, -0.021, 0.058), linear=True)  # Línea 2  3
+    robot.move(PoseObject(0.412, -0.061, 0.14, 0.042, -0.021, 0.058), linear=True)  # Línea 3  4 
+    robot.move(PoseObject(0.412, 0.089, 0.14, 0.042, -0.021, 0.058), linear=True)  # Línea 4   5
+    """
+
+   
 
 
 def triangulo(robot):
+    robot.set_arm_max_velocity(35)
     # Dibuja los tres lados del triángulo y termina en el punto de partida.
     # Los lados 1 y 3 tienen un punto medio; el lado 2 se recorre directamente.
     # Mantiene la orientación del rotulador y une las poses con movimientos rectos.
 
-    robot.move(PoseObject(0.412, 0.089, 0.14, 0.092, -0.041, 0.118))  # Posición inicial
-
-    robot.move(PoseObject(0.337, 0.089, 0.14, 0.092, -0.041, 0.118), linear=True)  # Línea 1.5
-
-    robot.move(PoseObject(0.262, 0.089, 0.13, 0.092, -0.041, 0.118), linear=True)  # Línea 1
-
-    robot.move(PoseObject(0.412, -0.061, 0.14, 0.092, -0.041, 0.118), linear=True)  # Línea 2
-
-    robot.move(PoseObject(0.412, 0.014, 0.14, 0.092, -0.041, 0.118), linear=True)  # Línea 3.5
-
-    robot.move(PoseObject(0.412, 0.089, 0.14, 0.092, -0.041, 0.118), linear=True)  # Línea 3
+    robot.move(PoseObject(0.22, -0.081, 0.0045, 0.042, -0.021, 0.058))  # Posición inicial
+    robot.move(PoseObject(0.30, -0.161, 0.005, 0.042, -0.021, 0.058), linear=True)  # Línea 2
+    robot.move(PoseObject(0.30, -0.081, 0.0045, 0.042, -0.021, 0.058), linear=True)  # Línea 1
+    robot.move(PoseObject(0.22, -0.081, 0.0045, 0.042, -0.021, 0.058), linear=True)  # Línea 3
 
     robot.move_to_home_pose()
 
@@ -75,11 +67,12 @@ def triangulo(robot):
 # -------------------------------------------------
 
 def circulo(robot):
+    robot.set_arm_max_velocity(50)
     # Calcula una circunferencia en el plano XY y reúne sus poses en una trayectoria.
     # El punto de partida está en el extremo de mayor X; Z fija la altura en metros.
-    inicio_x = 0.397
-    inicio_y = 0.028
-    z = 0.14
+    inicio_x = 0.37
+    inicio_y = -0.048
+    z = 0.0037
 
     # Ángulos de orientación del rotulador, en radianes, constantes durante el dibujo.
     roll = 0.031
@@ -91,7 +84,7 @@ def circulo(robot):
     centro_x = inicio_x - radio
     centro_y = inicio_y
     # Divide la vuelta en 150 tramos; se guardan 151 poses contando el cierre.
-    puntos = 150
+    puntos = 60
     trayectoria = []
 
     for i in range(puntos + 1):
@@ -99,7 +92,7 @@ def circulo(robot):
         angulo = 2 * math.pi * i / puntos
 
         # Usa las mismas coordenadas al empezar y terminar para cerrar el círculo.
-        if i == 0 or i == puntos:
+        if i == 0 or i == (puntos):
             x = inicio_x
             y = inicio_y
         else:
@@ -120,10 +113,10 @@ def circulo(robot):
         trayectoria.append(pose)
 
     # Primero coloca el robot en el punto de partida de la circunferencia.
-    robot.move(trayectoria[0])
+    # robot.move(trayectoria[0])
     # Ejecuta todas las poses juntas, con 1 mm de suavizado entre puntos.
     # Esto reduce las frenadas de los movimientos separados y puede variar algo el trazo.
-    robot.execute_trajectory(trayectoria, dist_smoothing=0.001)
+    robot.execute_trajectory(trayectoria, dist_smoothing=0.00075)
 
     # Una vez completado el círculo, regresa a la posición home del robot.
     robot.move_to_home_pose()
@@ -136,8 +129,8 @@ def circulo(robot):
 if __name__ == "__main__":
     robot = NiryoRobot(robot_ip_address)
     try:
-        robot.set_arm_max_velocity(40)
-        robot.set_tcp(0.022, 0, 0.074, 0, 0, 0)
+        
+        robot.set_tcp(0.022, 0, -0.072, 0, 0, 0)
         robot.calibrate_auto()
         robot.move_to_home_pose()
       
