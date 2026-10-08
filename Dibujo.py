@@ -7,11 +7,6 @@ import math
 robot_ip_address = '10.10.13.190'
 
 
-# Orientación del rotulador mientras dibuja
-ROLL = 0.035
-PITCH = 0.635
-YAW = -0.042
-
 
 # Cuadrado y triángulo: referencia superior de la captura.
 # Incrementos de 0.075 m: dos tramos por lado (0.15 m).
@@ -166,6 +161,7 @@ def circulo(robot):
     centro_x = inicio_x - radio
     centro_y = inicio_y
     puntos = 150
+    trayectoria = []
 
     for i in range(puntos + 1):
         angulo = 2 * math.pi * i / puntos
@@ -179,10 +175,17 @@ def circulo(robot):
 
         pose = PoseObject(x, y, z, roll, pitch, yaw)
 
-        if i == 0:
-            robot.move(pose)
-        else:
-            robot.move(pose, linear=True)
+        # Movimiento anterior, punto a punto:
+        # if i == 0:
+        #     robot.move(pose)
+        # else:
+        #     robot.move(pose, linear=True)
+
+        trayectoria.append(pose)
+
+    # Ir al inicio y ejecutar el círculo con suavizado de 1 mm.
+    robot.move(trayectoria[0])
+    robot.execute_trajectory(trayectoria, dist_smoothing=0.001)
 
     robot.move_to_home_pose()
 
@@ -195,7 +198,7 @@ if __name__ == "__main__":
     robot = NiryoRobot(robot_ip_address)
     try:
         robot.set_arm_max_velocity(40)
-        robot.set_tcp(0.022, 0, 0.070, 0, 0, 0)
+        robot.set_tcp(0.022, 0, 0.074, 0, 0, 0)
         robot.calibrate_auto()
         robot.move_to_home_pose()
       
