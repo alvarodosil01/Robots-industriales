@@ -37,16 +37,6 @@ def cuadrado(robot):
     robot.move(PoseObject(0.22, -0.061, 0.004, 0.042, -0.021, 0.058), linear=True)  # Línea 2  3
     robot.move_to_home_pose()
 
-"""
-    robot.move(PoseObject(0.412, 0.089, 0.14, 0.042, -0.021, 0.058))  # Posición inicial  1
-    robot.move(PoseObject(0.262, 0.089, 0.13, 0.042, -0.021, 0.058), linear=True)  # Línea 1   2
-    robot.move(PoseObject(0.262, -0.061, 0.14, 0.042, -0.021, 0.058), linear=True)  # Línea 2  3
-    robot.move(PoseObject(0.412, -0.061, 0.14, 0.042, -0.021, 0.058), linear=True)  # Línea 3  4 
-    robot.move(PoseObject(0.412, 0.089, 0.14, 0.042, -0.021, 0.058), linear=True)  # Línea 4   5
-    """
-
-   
-
 
 def triangulo(robot):
     robot.set_arm_max_velocity(35)
@@ -90,24 +80,11 @@ def circulo(robot):
     for i in range(puntos + 2):
         # Convierte el índice en un ángulo de 0 a 2*pi radianes (una vuelta completa).
         angulo = 2 * math.pi * i / puntos
-
-        # # Usa las mismas coordenadas al empezar y terminar para cerrar el círculo.
-        # if i == 0 or i == puntos:
-        #     x = inicio_x
-        #     y = inicio_y
-        # else:
-            # Coseno y seno dan los desplazamientos X e Y respecto al centro.
         x = centro_x + radio * math.cos(angulo)
         y = centro_y + radio * math.sin(angulo)
 
         # Combina cada posición calculada con la altura y orientación constantes.
         pose = PoseObject(x, y, z, roll, pitch, yaw)
-
-        # Movimiento anterior, punto a punto:
-        # if i == 0:
-        #     robot.move(pose)
-        # else:
-        #     robot.move(pose, linear=True)
 
         # Añade la pose a la lista; aquí todavía no se mueve el robot.
         trayectoria.append(pose)
@@ -140,7 +117,7 @@ if __name__ == "__main__":
 
         figura = input(
             "¿Qué quieres dibujar? "
-            "(cuadrado / triangulo / circulo): "
+            "(cuadrado / triangulo / circulo/ todos): "
         ).strip().lower()
 
 
