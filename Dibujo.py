@@ -80,6 +80,7 @@ def circulo(robot):
     for i in range(puntos + 2):
         # Convierte el índice en un ángulo de 0 a 2*pi radianes (una vuelta completa).
         angulo = 2 * math.pi * i / puntos
+
         x = centro_x + radio * math.cos(angulo)
         y = centro_y + radio * math.sin(angulo)
 
