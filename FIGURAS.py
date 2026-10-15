@@ -10,7 +10,7 @@ from pyniryo import NiryoRobot, PoseObject
 # Variables y constantes
 # CONEXIÓN
 # -------------------------------------------------
-robot_ip_address = '10.10.12.203'
+robot_ip_address = '10.10.13.221'
 aproximacion = 0.035
 
 
@@ -36,13 +36,13 @@ def cuadrado(robot):
     robot.set_arm_max_velocity(75)
     robot.move(PoseObject(0.254, 0.044, 0.09, 1.257, 1.492, 1.298), linear=True)
     robot.move(PoseObject(0.00, -0.15, 0.15, 1.257, 1.492, 1.298))
-    robot.move(PoseObject(-0.057, -0.266, 0.09, -0.945, 1.494, -3.3))
-    # 4. Bajar verticalmente en el destino y soltar.
-    robot.move(PoseObject(-0.057, -0.266, 0.061, -0.945, 1.494, -3.3), linear=True)
+    robot.move(PoseObject(-0.057, -0.266,0.15, 1.257, 1.492, 1.298))
+    # # 4. Bajar verticalmente en el destino y soltar.
+    robot.move(PoseObject(-0.057, -0.266,0.061, 1.257, 1.492, 1.298), linear=True)
     robot.release_with_tool()
     robot.wait(1)
-    # 5. Retirarse hasta la altura de aproximación con la pinza abierta.
-    robot.move(PoseObject(-0.057, -0.266, 0.1, -0.945, 1.494, -3.3), linear=True)
+    # # 5. Retirarse hasta la altura de aproximación con la pinza abierta.
+    robot.move(PoseObject(-0.057, -0.266, 0.2, 1.257, 1.492, 1.298), linear=True)
     robot.grasp_with_tool()
     robot.move_to_home_pose()
     
@@ -50,14 +50,14 @@ def cuadrado_vuelta(robot):
     # 6. Volver al destino, abrir, bajar y recoger el cuadrado.
     robot.set_arm_max_velocity(60)
     robot.move(PoseObject(0.00, -0.15, 0.15, 1.257, 1.492, 1.298))
-    robot.move(PoseObject(-0.057, -0.266, 0.1, -0.945, 1.494, -3.3))
+    robot.move(PoseObject(-0.057, -0.266, 0.1, 1.257, 1.492, 1.298))
     robot.release_with_tool()
-    robot.move(PoseObject(-0.057, -0.266, 0.061, -0.945, 1.494, -3.3), linear=True)
+    robot.move(PoseObject(-0.057, -0.266, 0.061, 1.257, 1.492, 1.298), linear=True)
     robot.grasp_with_tool()
     robot.wait(1)
 
     # 7. Subir y regresar por el punto intermedio hasta encima del origen.
-    robot.move(PoseObject(-0.057, -0.266, 0.1, -0.945, 1.494, -3.3), linear=True)
+    robot.move(PoseObject(-0.057, -0.266, 0.1, 1.257, 1.492, 1.298), linear=True)
     robot.move(PoseObject(0.00, -0.15, 0.15, 1.257, 1.492, 1.298))
     robot.move(PoseObject(0.254, 0.044, 0.09, 1.257, 1.492, 1.298))
 
@@ -74,24 +74,24 @@ def cuadrado_vuelta(robot):
 def rombo(robot):
     # 1. Acercarse por encima de la pieza y abrir la pinza.
     robot.set_arm_max_velocity(100)
-    robot.move(PoseObject(0.264, -0.085, aproximacion, 1.257, 1.492, 1.298))
+    robot.move(PoseObject(0.260, -0.085, aproximacion, 1.257, 1.492, 1.298))
     robot.release_with_tool()   
     # 2. Bajar verticalmente y cerrar para coger la pieza.
     robot.set_arm_max_velocity(60)
-    robot.move(PoseObject(0.264, -0.085, 0.005, 1.257, 1.492, 1.298), linear=True)
+    robot.move(PoseObject(0.260, -0.085, 0.005, 1.257, 1.492, 1.298), linear=True)
     robot.grasp_with_tool()     
     robot.wait(1)
     # 3. Levantar antes de trasladar por el punto intermedio.
     robot.set_arm_max_velocity(75)
-    robot.move(PoseObject(0.264, -0.085, 0.09, 1.257, 1.492, 1.298), linear=True)
+    robot.move(PoseObject(0.260, -0.085, 0.09, 1.257, 1.492, 1.298), linear=True)
     robot.move(PoseObject(0.00, -0.15, 0.15, 1.257, 1.492, 1.298))
-    robot.move(PoseObject(0.026, -0.268, 0.15, -0.945, 1.494, -1.5)) # atencion
+    robot.move(PoseObject(0.026, -0.268, 0.15,1.257, 1.492, 1.298)) # atencion
     # 4. Bajar verticalmente en el destino y soltar.
-    robot.move(PoseObject(0.026, -0.268, 0.061, -0.945, 1.494, -1.5), linear=True)
+    robot.move(PoseObject(0.026, -0.268, 0.061,1.257, 1.492, 1.298), linear=True)
     robot.release_with_tool()
     robot.wait(1)
     # 5. Retirarse hasta la altura de aproximación con la pinza abierta.
-    robot.move(PoseObject(0.026, -0.268, 0.12, -0.945, 1.494, -1.5), linear=True)
+    robot.move(PoseObject(0.026, -0.268, 0.12,1.257, 1.492, 1.298), linear=True)
     robot.grasp_with_tool()
     robot.move_to_home_pose()
     
@@ -99,19 +99,19 @@ def rombo_vuelta(robot):
     # 6. Volver al destino, abrir, bajar y recoger el rombo.
     robot.set_arm_max_velocity(60)
     robot.move(PoseObject(0.00, -0.15, 0.15, 1.257, 1.492, 1.298))
-    robot.move(PoseObject(0.026, -0.268, 0.15, -0.945, 1.494, -1.5))
+    robot.move(PoseObject(0.026, -0.268, 0.15,1.257, 1.492, 1.298))
     robot.release_with_tool()
-    robot.move(PoseObject(0.026, -0.268, 0.061, -0.945, 1.494, -1.5), linear=True)
+    robot.move(PoseObject(0.026, -0.268, 0.061, 1.257, 1.492, 1.298), linear=True)
     robot.grasp_with_tool()
     robot.wait(1)
 
     # 7. Subir y regresar por el punto intermedio hasta encima del origen.
-    robot.move(PoseObject(0.026, -0.268, 0.15, -0.945, 1.494, -1.5), linear=True)
+    robot.move(PoseObject(0.026, -0.268, 0.15,1.257, 1.492, 1.298), linear=True)
     robot.move(PoseObject(0.00, -0.15, 0.15, 1.257, 1.492, 1.298))
     robot.move(PoseObject(0.264, -0.085, 0.09, 1.257, 1.492, 1.298))
 
     # 8. Bajar, dejar en la posición inicial y subir con la pinza abierta.
-    robot.move(PoseObject(0.264, -0.085, 0.005, 1.257, 1.492, 1.298), linear=True)
+    robot.move(PoseObject(0.264, -0.085, 0.004, 1.257, 1.492, 1.298), linear=True)
     robot.release_with_tool()
     robot.wait(1)
     robot.move(PoseObject(0.264, -0.085, 0.035, 1.257, 1.492, 1.298), linear=True)
