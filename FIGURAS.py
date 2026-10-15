@@ -11,6 +11,7 @@ from pyniryo import NiryoRobot, PoseObject
 # CONEXIÓN
 # -------------------------------------------------
 robot_ip_address = '10.10.13.221'
+
 # Orientacion en radianes y alturas base en metros.
 Raw = 1.257
 Pitch = 1.492
@@ -83,190 +84,80 @@ def pose_traslado(posicion, orientacion=(Raw, Pitch, Yaw)):
 def pose_retirada(posicion, orientacion=(Raw, Pitch, Yaw)):
     # Preparar una pose 5,9 cm sobre el destino para apartar la pinza tras soltar.
     return pose_con_offset(posicion, offset_retirada, orientacion)
+# Cada nombre agrupa las posiciones y orientaciones de su figura.
 
-
-def cuadrado(robot):
-    datos = figuras["cuadrado"]
-    # 1. Acercarse por encima de la pieza y abrir la pinza.
-    robot.set_arm_max_velocity(100)
-    robot.move(pose_aproximacion(datos["origen"]))
-    robot.release_with_tool()   
-    # 2. Bajar verticalmente y cerrar para coger la pieza.
-    robot.set_arm_max_velocity(60)
-    robot.move(pose_base(datos["origen"]), linear=True)
-    robot.grasp_with_tool()     
-    robot.wait(1)
-    # 3. Levantar antes de trasladar por el punto intermedio.
-    robot.set_arm_max_velocity(75)
-    robot.move(pose_elevacion(datos["origen"]), linear=True)
-    robot.move(pose_traslado(pintermedio))
-    robot.move(pose_traslado(datos["destino"]))
-    # # 4. Bajar verticalmente en el destino y soltar.
-    robot.move(pose_base(datos["destino"]), linear=True)
-    robot.release_with_tool()
-    robot.wait(1)
-    # # 5. Retirarse hasta la altura de aproximación con la pinza abierta.
-    robot.move(pose_retirada(datos["destino"]), linear=True)
-    robot.grasp_with_tool()
-    robot.move_to_home_pose()
-    
-def cuadrado_vuelta(robot):
-    datos = figuras["cuadrado"]
-    # 6. Volver al destino, abrir, bajar y recoger el cuadrado.
-    robot.set_arm_max_velocity(60)
-    robot.move(pose_traslado(pintermedio))
-    robot.move(pose_traslado(datos["destino"]))
-    robot.release_with_tool()
-    robot.move(pose_base(datos["destino"]), linear=True)
-    robot.grasp_with_tool()
-    robot.wait(1)
-
-    # 7. Subir y regresar por el punto intermedio hasta encima del origen.
-    robot.move(pose_traslado(datos["destino"]), linear=True)
-    robot.move(pose_traslado(pintermedio))
-    robot.move(pose_elevacion(datos["origen"]))
-
-    # 8. Bajar, dejar en la posición inicial y subir con la pinza abierta.
-    robot.move(pose_base(datos["origen"]), linear=True)
-    robot.release_with_tool()
-    robot.wait(1)
-    robot.move(pose_aproximacion(datos["origen"]), linear=True)
-    robot.grasp_with_tool() 
-    robot.move_to_home_pose()
-
-
-
-def rombo(robot):
-    datos = figuras["rombo"]
-    # 1. Acercarse por encima de la pieza y abrir la pinza.
-    robot.set_arm_max_velocity(100)
-    robot.move(pose_aproximacion(datos["origen"]))
-    robot.release_with_tool()   
-    # 2. Bajar verticalmente y cerrar para coger la pieza.
-    robot.set_arm_max_velocity(60)
-    robot.move(pose_base(datos["origen"]), linear=True)
-    robot.grasp_with_tool()     
-    robot.wait(1)
-    # 3. Levantar antes de trasladar por el punto intermedio.
-    robot.set_arm_max_velocity(75)
-    robot.move(pose_elevacion(datos["origen"]), linear=True)
-    robot.move(pose_traslado(pintermedio))
-    robot.move(pose_traslado(datos["destino"])) # atencion
-    # 4. Bajar verticalmente en el destino y soltar.
-    robot.move(pose_base(datos["destino"]), linear=True)
-    robot.release_with_tool()
-    robot.wait(1)
-    # 5. Retirarse hasta la altura de aproximación con la pinza abierta.
-    robot.move(pose_retirada(datos["destino"]), linear=True)
-    robot.grasp_with_tool()
-    robot.move_to_home_pose()
-    
-def rombo_vuelta(robot):
-    datos = figuras["rombo"]
-    # 6. Volver al destino, abrir, bajar y recoger el rombo.
-    robot.set_arm_max_velocity(60)
-    robot.move(pose_traslado(pintermedio))
-    robot.move(pose_traslado(datos["destino"]))
-    robot.release_with_tool()
-    robot.move(pose_base(datos["destino"]), linear=True) 
-    robot.grasp_with_tool()
-    robot.wait(1)
-
-    # 7. Subir y regresar por el punto intermedio hasta encima del origen.
-    robot.move(pose_traslado(datos["destino"]), linear=True)
-    robot.move(pose_traslado(pintermedio))
-    robot.move(pose_elevacion(datos["origen"]))
-
-    # 8. Bajar, dejar en la posición inicial y subir con la pinza abierta.
-    robot.move(pose_base(datos["origen"]), linear=True)
-    robot.release_with_tool()
-    robot.wait(1)
-    robot.move(pose_aproximacion(datos["origen"]), linear=True)
-    robot.grasp_with_tool() 
-    robot.move_to_home_pose()
-    
-    
-
-
-# -------------------------------------------------
-# CÍRCULO
-# -------------------------------------------------
-
-def circulo(robot):
-        datos = figuras["circulo"]
-    # 1. Acercarse por encima de la pieza y abrir la pinza.
-        robot.set_arm_max_velocity(100)
-        robot.move(pose_aproximacion(datos["origen"]))
-        robot.release_with_tool()   
-        # 2. Bajar verticalmente y cerrar para coger la pieza.
-        robot.set_arm_max_velocity(60)
-        robot.move(pose_base(datos["origen"]), linear=True)
-        robot.grasp_with_tool()     
-        robot.wait(1)
-        # 3. Levantar antes de trasladar por el punto intermedio.
-        robot.set_arm_max_velocity(75)
-    
-        robot.move(pose_elevacion(datos["origen"]), linear=True)
-        robot.move(pose_traslado(pintermedio))
-        robot.move(pose_traslado(datos["destino"], datos["orientacion_aproximacion"]))
-        # # 4. Bajar verticalmente en el destino y soltar.
-        robot.move(pose_base(datos["destino"], datos["orientacion"]),linear=True)
-        robot.release_with_tool()
-        robot.wait(1)
-        # # 5. Retirarse hasta la altura de aproximación con la pinza abierta.
-        robot.move(pose_retirada(datos["destino"], datos["orientacion"]),linear=True)
-        robot.grasp_with_tool()
-        robot.move_to_home_pose()
-        
-def circulo_vuelta(robot):
-        datos = figuras["circulo"]
-        # 6. Volver al destino, abrir, bajar y recoger el círculo.
-        robot.set_arm_max_velocity(60)
-        robot.move(pose_traslado(pintermedio))
-        robot.move(pose_traslado(datos["destino"], datos["orientacion"]))
-        robot.release_with_tool()
-        robot.move(pose_base(datos["destino"], datos["orientacion"]), linear=True)
-        robot.grasp_with_tool()
-        robot.wait(1)
-
-        # 7. Subir y regresar por el punto intermedio hasta encima del origen.
-        robot.move(pose_traslado(datos["destino"], datos["orientacion"]), linear=True)
-        robot.move(pose_traslado(pintermedio))
-        robot.move(pose_elevacion(datos["origen"]))
-
-        # 8. Bajar, dejar en la posición inicial y subir con la pinza abierta.
-        robot.move(pose_base(datos["origen"]), linear=True)
-        robot.release_with_tool()
-        robot.wait(1)
-        robot.move(pose_aproximacion(datos["origen"]), linear=True)
-        robot.grasp_with_tool() 
-        robot.move_to_home_pose()
-        
-
-# -------------------------------------------------
-# PROGRAMA PRINCIPAL
-# -------------------------------------------------
-
-# Cada nombre agrupa las posiciones, orientaciones y funciones de su figura.
-# Las funciones se guardan sin parentesis para ejecutarlas solo al seleccionarlas.
 figuras = {
     "cuadrado": {
         "origen": picuadrado, "destino": pfcuadrado,
         "orientacion": (Raw, Pitch, Yaw),
-        "ida": cuadrado, "vuelta": cuadrado_vuelta,
     },
     "circulo": {
         "origen": picirculo, "destino": pfcirculo,
         "orientacion": (Raw_circulo, Pitch_circulo, Yaw_circulo),
         "orientacion_aproximacion": (Raw_circulo, Pitch, Yaw_circulo),
-        "ida": circulo, "vuelta": circulo_vuelta,
     },
     "rombo": {
         "origen": pirombo, "destino": pfrombo,
         "orientacion": (Raw, Pitch, Yaw),
-        "ida": rombo, "vuelta": rombo_vuelta,
     },
 }
+
+def llevar(robot, datos):
+    # 1. Acercarse por encima de la pieza y abrir la pinza.
+    robot.set_arm_max_velocity(100)
+    robot.move(pose_aproximacion(datos["origen"]))
+    robot.release_with_tool()   
+    # 2. Bajar verticalmente y cerrar para coger la pieza.
+    robot.set_arm_max_velocity(60)
+    robot.move(pose_base(datos["origen"]), linear=True)
+    robot.grasp_with_tool()     
+    robot.wait(1)
+    # 3. Levantar antes de trasladar por el punto intermedio.
+    robot.set_arm_max_velocity(75)
+    robot.move(pose_elevacion(datos["origen"]), linear=True)
+    robot.move(pose_traslado(pintermedio))
+    # El circulo conserva su orientacion especial al aproximarse al destino.
+    orientacion_aproximacion = datos.get("orientacion_aproximacion", datos["orientacion"])
+    robot.move(pose_traslado(datos["destino"], orientacion_aproximacion))
+    # # 4. Bajar verticalmente en el destino y soltar.
+    robot.move(pose_base(datos["destino"], datos["orientacion"]), linear=True)
+    robot.release_with_tool()
+    robot.wait(1)
+    # # 5. Retirarse hasta la altura de aproximación con la pinza abierta.
+    robot.move(pose_retirada(datos["destino"], datos["orientacion"]), linear=True)
+    robot.grasp_with_tool()
+    robot.move_to_home_pose()
+    
+def devolver(robot, datos):
+    # 6. Volver al destino, abrir, bajar y recoger la pieza.
+    robot.set_arm_max_velocity(60)
+    robot.move(pose_traslado(pintermedio))
+    robot.move(pose_traslado(datos["destino"], datos["orientacion"]))
+    robot.release_with_tool()
+    robot.move(pose_base(datos["destino"], datos["orientacion"]), linear=True)
+    robot.grasp_with_tool()
+    robot.wait(1)
+
+    # 7. Subir y regresar por el punto intermedio hasta encima del origen.
+    robot.move(pose_traslado(datos["destino"], datos["orientacion"]), linear=True)
+    robot.move(pose_traslado(pintermedio))
+    robot.move(pose_elevacion(datos["origen"]))
+
+    # 8. Bajar, dejar en la posición inicial y subir con la pinza abierta.
+    robot.move(pose_base(datos["origen"]), linear=True)
+    robot.release_with_tool()
+    robot.wait(1)
+    robot.move(pose_aproximacion(datos["origen"]), linear=True)
+    robot.grasp_with_tool() 
+    robot.move_to_home_pose()
+
+
+
+# -------------------------------------------------
+# PROGRAMA PRINCIPAL
+# -------------------------------------------------
+
+
 
 if __name__ == "__main__":
     print("Escribe cuadrado, circulo, rombo o todos y pulsa Enter en la terminal.", flush=True)
@@ -292,9 +183,9 @@ if __name__ == "__main__":
         # Con "todos": primero las tres idas y despues las tres vueltas.
         seleccion = figuras.values() if figura == "todos" else [figuras[figura]]
         for datos in seleccion:
-            datos["ida"](robot)
+            llevar(robot, datos)
         for datos in seleccion:
-            datos["vuelta"](robot)
+            devolver(robot, datos)
 
     finally:
         # Cerrar la conexion tanto al terminar como si falla un movimiento.
