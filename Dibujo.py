@@ -11,7 +11,7 @@ import math
 # Variables y constantes
 # CONEXIÓN
 # -------------------------------------------------
-robot_ip_address = '10.10.13.190'
+robot_ip_address = '10.10.13.186'
 
 
 
