@@ -201,9 +201,16 @@ if __name__ == "__main__":
     # Al iniciar, las tres piezas deben estar en sus posiciones de origen.
     # Cada figura recuerda por separado si ya se llevo a la posicion alta.
     # False significa origen; True significa destino alto. Se reinician al arrancar.
-    cuadrado_arriba = False
-    rombo_arriba = False
-    circulo_arriba = False
+    arriba = {
+        "cuadrado": False,
+        "rombo": False,
+        "circulo": False,
+    }
+    botones = {
+        "cuadrado": BOTON_CUADRADO,
+        "rombo": BOTON_ROMBO,
+        "circulo": BOTON_CIRCULO,
+    }
     # Abrir la conexion TCP con el robot.
     robot = NiryoRobot(robot_ip_address)
     try:
@@ -225,42 +232,18 @@ if __name__ == "__main__":
 
         # Consultar los botones continuamente; ejecutar una sola figura cada vez.
         while True:
-            # Rojo al trabajar y verde al terminar, para cualquier figura.
-            if robot.digital_read(BOTON_CUADRADO) == PULSADO:
-                trabajando(robot)
-                # Alternar ida y vuelta; guardar el estado cuando termina el movimiento.
-                if not cuadrado_arriba:
-                    llevar(robot, figuras["cuadrado"])
-                    cuadrado_arriba = True
-                else:
-                    devolver(robot, figuras["cuadrado"])
-                    cuadrado_arriba = False
-                disponible(robot)
-                esperar_botones_sueltos(robot)
-
-            elif robot.digital_read(BOTON_ROMBO) == PULSADO:
-                trabajando(robot)
-                # El rombo conserva su propio estado, independiente de las otras piezas.
-                if not rombo_arriba:
-                    llevar(robot, figuras["rombo"])
-                    rombo_arriba = True
-                else:
-                    devolver(robot, figuras["rombo"])
-                    rombo_arriba = False
-                disponible(robot)
-                esperar_botones_sueltos(robot)
-
-            elif robot.digital_read(BOTON_CIRCULO) == PULSADO:
-                trabajando(robot)
-                # El circulo conserva su propio estado, independiente de las otras piezas.
-                if not circulo_arriba:
-                    llevar(robot, figuras["circulo"])
-                    circulo_arriba = True
-                else:
-                    devolver(robot, figuras["circulo"])
-                    circulo_arriba = False
-                disponible(robot)
-                esperar_botones_sueltos(robot)
+            for nombre, boton in botones.items():
+                if robot.digital_read(boton) == PULSADO:
+                    trabajando(robot)
+                    # Alternar ida y vuelta; actualizar el estado tras el movimiento.
+                    if not arriba[nombre]:
+                        llevar(robot, figuras[nombre])
+                    else:
+                        devolver(robot, figuras[nombre])
+                    arriba[nombre] = not arriba[nombre]
+                    disponible(robot)
+                    esperar_botones_sueltos(robot)
+                    break
 
             # Pausa de 50 ms entre consultas para no consultar continuamente sin descanso.
             sleep(0.05)
