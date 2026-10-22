@@ -9,8 +9,8 @@ robot_ip_address = '10.10.15.89'
 Raw = 1.257
 Pitch = 1.492
 Yaw = 1.298
-altura_inicial = 0.005
-altura_destino = 0.061
+altura_inicial = 0.005 #Altura inicial en la mesa
+altura_destino = 0.063  #Alrua destino en un altura (en clase caja de folios)
 
 # Incrementos de Z respecto a la posicion recibida, no alturas absolutas.
 # Z final = Z base de la posicion + offset (todo en metros).
@@ -23,7 +23,7 @@ offset_retirada = 0.059     # Destino: 0.061 + 0.059 = 0.120.
 # Posiciones X, Y, Z base. pi = origen; pf = destino alto.
 picuadrado = [0.254, 0.044, altura_inicial]
 pfcuadrado = [-0.057, -0.266, altura_destino]
-pirombo = [0.260, -0.085, altura_inicial]
+pirombo = [0.254, -0.085, altura_inicial]
 pfrombo = [0.026, -0.268, altura_destino]
 picirculo = [0.259, -0.02, altura_inicial]
 pfcirculo = [0.092, -0.268, altura_destino]
@@ -147,12 +147,14 @@ def devolver(robot, datos):
 # Cambiar estos pines si el cableado utiliza otras entradas/salidas.
 # Botones: 1 cuadrado, 2 circulo y 3 rombo.
 BOTON_CUADRADO = PinID.DI1
-BOTON_ROMBO = PinID.DI3
 BOTON_CIRCULO = PinID.DI2
-# Luces: DO1 rojo, DO2 amarillo y DO3 verde.
-LUZ_CUADRADO = PinID.DO3
-LUZ_ROMBO = PinID.DO1
-LUZ_CIRCULO = PinID.DO2
+BOTON_ROMBO = PinID.DI3
+
+# Estados: DO1 rojo (trabajando), DO3 verde (disponible).
+# DO2 amarillo se mantiene apagado.
+LUZ_DISPONIBLE = PinID.DO3 
+LUZ_TRABAJANDO = PinID.DO1
+LUZ_AMARILLA = PinID.DO2
 # Se supone que al pulsar llega HIGH y que HIGH enciende la luz.
 PULSADO = PinState.HIGH
 
@@ -160,7 +162,7 @@ PULSADO = PinState.HIGH
 # digital_write cambia una salida: HIGH enciende y LOW apaga.
 def encender_luz(robot, luz):
     # Apagar las otras luces antes de encender la seleccionada.
-    for salida in (LUZ_CUADRADO, LUZ_ROMBO, LUZ_CIRCULO):
+    for salida in (LUZ_DISPONIBLE, LUZ_TRABAJANDO, LUZ_AMARILLA):
         if salida != luz:
             robot.digital_write(salida, PinState.LOW)
     robot.digital_write(luz, PinState.HIGH)
@@ -168,22 +170,14 @@ def encender_luz(robot, luz):
 
 # Verde: el movimiento ha terminado. Para otra orden hay que soltar los botones.
 def disponible(robot):
-    encender_luz(robot, LUZ_CUADRADO)  # DO3: verde.
+    encender_luz(robot, LUZ_DISPONIBLE)  # DO3: verde.
     print("Disponible", flush=True)
 
 
 # Rojo durante los movimientos de una figura seleccionada con un boton.
 def trabajando(robot):
-    encender_luz(robot, LUZ_ROMBO)  # DO1: rojo.
+    encender_luz(robot, LUZ_TRABAJANDO)  # DO1: rojo.
     print("Trabajando", flush=True)
-
-
-# Color de seleccion durante un segundo: cuadrado verde, circulo amarillo, rombo rojo.
-def indicar_figura(robot, luz):
-    # Mostrar primero el color de la figura y despues el estado de trabajo.
-    encender_luz(robot, luz)
-    sleep(1)
-    trabajando(robot)
 
 
 # digital_read consulta el estado de cada entrada digital.
@@ -214,9 +208,9 @@ if __name__ == "__main__":
     robot = NiryoRobot(robot_ip_address)
     try:
         # DI son entradas y DO salidas: no necesitan set_pin_mode().
-        robot.digital_write(LUZ_CUADRADO, PinState.LOW)
-        robot.digital_write(LUZ_ROMBO, PinState.LOW)
-        robot.digital_write(LUZ_CIRCULO, PinState.LOW)
+        robot.digital_write(LUZ_DISPONIBLE, PinState.LOW)
+        robot.digital_write(LUZ_TRABAJANDO, PinState.LOW)
+        robot.digital_write(LUZ_AMARILLA, PinState.LOW)
         # La preparacion inicial no es una orden de los botones.
         print("Inicializando robot...", flush=True)
         # Calibrar si hace falta y detectar la herramienta instalada.
@@ -231,9 +225,9 @@ if __name__ == "__main__":
 
         # Consultar los botones continuamente; ejecutar una sola figura cada vez.
         while True:
-            # Color de la figura al pulsar, rojo al mover y verde al terminar.
+            # Rojo al trabajar y verde al terminar, para cualquier figura.
             if robot.digital_read(BOTON_CUADRADO) == PULSADO:
-                indicar_figura(robot, LUZ_CUADRADO)
+                trabajando(robot)
                 # Alternar ida y vuelta; guardar el estado cuando termina el movimiento.
                 if not cuadrado_arriba:
                     llevar(robot, figuras["cuadrado"])
@@ -245,7 +239,7 @@ if __name__ == "__main__":
                 esperar_botones_sueltos(robot)
 
             elif robot.digital_read(BOTON_ROMBO) == PULSADO:
-                indicar_figura(robot, LUZ_ROMBO)
+                trabajando(robot)
                 # El rombo conserva su propio estado, independiente de las otras piezas.
                 if not rombo_arriba:
                     llevar(robot, figuras["rombo"])
@@ -257,7 +251,7 @@ if __name__ == "__main__":
                 esperar_botones_sueltos(robot)
 
             elif robot.digital_read(BOTON_CIRCULO) == PULSADO:
-                indicar_figura(robot, LUZ_CIRCULO)
+                trabajando(robot)
                 # El circulo conserva su propio estado, independiente de las otras piezas.
                 if not circulo_arriba:
                     llevar(robot, figuras["circulo"])
@@ -275,7 +269,7 @@ if __name__ == "__main__":
     finally:
         # Intenta apagar cada luz incluso si falla otra salida.
         try:
-            for luz in (LUZ_CUADRADO, LUZ_ROMBO, LUZ_CIRCULO):
+            for luz in (LUZ_DISPONIBLE, LUZ_TRABAJANDO, LUZ_AMARILLA):
                 try:
                     robot.digital_write(luz, PinState.LOW)
                 except Exception as error:
