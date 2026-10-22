@@ -3,7 +3,7 @@ from pyniryo import NiryoRobot, PoseObject, PinID, PinState
 from time import sleep
 
 # Constantes, poses y movimientos incluidos en este archivo.
-robot_ip_address = '10.10.13.221'
+robot_ip_address = '10.10.15.89'
 
 # Orientacion en radianes y alturas base en metros.
 Raw = 1.257
@@ -149,9 +149,9 @@ def devolver(robot, datos):
 BOTON_CUADRADO = PinID.DI1
 BOTON_ROMBO = PinID.DI3
 BOTON_CIRCULO = PinID.DI2
-# Luces: DO1 verde, DO2 amarillo y DO3 rojo.
-LUZ_CUADRADO = PinID.DO1
-LUZ_ROMBO = PinID.DO3
+# Luces: DO1 rojo, DO2 amarillo y DO3 verde.
+LUZ_CUADRADO = PinID.DO3
+LUZ_ROMBO = PinID.DO1
 LUZ_CIRCULO = PinID.DO2
 # Se supone que al pulsar llega HIGH y que HIGH enciende la luz.
 PULSADO = PinState.HIGH
@@ -168,13 +168,13 @@ def encender_luz(robot, luz):
 
 # Verde: el movimiento ha terminado. Para otra orden hay que soltar los botones.
 def disponible(robot):
-    encender_luz(robot, LUZ_CUADRADO)  # DO1: verde.
+    encender_luz(robot, LUZ_CUADRADO)  # DO3: verde.
     print("Disponible", flush=True)
 
 
 # Rojo durante los movimientos de una figura seleccionada con un boton.
 def trabajando(robot):
-    encender_luz(robot, LUZ_ROMBO)  # DO3: rojo.
+    encender_luz(robot, LUZ_ROMBO)  # DO1: rojo.
     print("Trabajando", flush=True)
 
 
