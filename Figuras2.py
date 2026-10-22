@@ -1,6 +1,5 @@
 # Control de figuras mediante botones externos y luces de estado.
 from pyniryo import NiryoRobot, PoseObject, PinID, PinState
-from time import sleep
 
 # Constantes, poses y movimientos incluidos en este archivo.
 robot_ip_address = '10.10.15.89'
@@ -149,12 +148,18 @@ def devolver(robot, datos):
 BOTON_CUADRADO = PinID.DI1
 BOTON_CIRCULO = PinID.DI2
 BOTON_ROMBO = PinID.DI3
+botones = {
+    "cuadrado": BOTON_CUADRADO,
+    "rombo": BOTON_ROMBO,
+    "circulo": BOTON_CIRCULO,
+}
 
 # Estados: DO1 rojo (trabajando), DO3 verde (disponible).
 # DO2 amarillo se mantiene apagado.
 LUZ_DISPONIBLE = PinID.DO3 
 LUZ_TRABAJANDO = PinID.DO1
 LUZ_AMARILLA = PinID.DO2
+LUCES = (LUZ_DISPONIBLE, LUZ_TRABAJANDO, LUZ_AMARILLA)
 # Se supone que al pulsar llega HIGH y que HIGH enciende la luz.
 PULSADO = PinState.HIGH
 
@@ -162,7 +167,7 @@ PULSADO = PinState.HIGH
 # digital_write cambia una salida: HIGH enciende y LOW apaga.
 def encender_luz(robot, luz):
     # Apagar las otras luces antes de encender la seleccionada.
-    for salida in (LUZ_DISPONIBLE, LUZ_TRABAJANDO, LUZ_AMARILLA):
+    for salida in LUCES:
         if salida != luz:
             robot.digital_write(salida, PinState.LOW)
     robot.digital_write(luz, PinState.HIGH)
@@ -181,18 +186,19 @@ def trabajando(robot):
 
 
 # digital_read consulta el estado de cada entrada digital.
+def hay_boton_pulsado(robot):
+    # True si cualquiera de los botones configurados esta pulsado.
+    return any(robot.digital_read(boton) == PULSADO for boton in botones.values())
+
+
 def esperar_botones_sueltos(robot):
     # Evita repetir un ciclo por mantener pulsado un boton.
     while True:
-        while (robot.digital_read(BOTON_CUADRADO) == PULSADO
-               or robot.digital_read(BOTON_ROMBO) == PULSADO
-               or robot.digital_read(BOTON_CIRCULO) == PULSADO):
+        while hay_boton_pulsado(robot):
             # Pausa de 50 ms entre consultas para no consultar continuamente sin descanso.
-            sleep(0.05)
-        sleep(0.05)  # Antirrebote sencillo al soltar.
-        if (robot.digital_read(BOTON_CUADRADO) != PULSADO
-                and robot.digital_read(BOTON_ROMBO) != PULSADO
-                and robot.digital_read(BOTON_CIRCULO) != PULSADO):
+            robot.wait(0.05)
+        robot.wait(0.05)  # Antirrebote sencillo al soltar.
+        if not hay_boton_pulsado(robot):
             return
 
 
@@ -201,23 +207,13 @@ if __name__ == "__main__":
     # Al iniciar, las tres piezas deben estar en sus posiciones de origen.
     # Cada figura recuerda por separado si ya se llevo a la posicion alta.
     # False significa origen; True significa destino alto. Se reinician al arrancar.
-    arriba = {
-        "cuadrado": False,
-        "rombo": False,
-        "circulo": False,
-    }
-    botones = {
-        "cuadrado": BOTON_CUADRADO,
-        "rombo": BOTON_ROMBO,
-        "circulo": BOTON_CIRCULO,
-    }
+    arriba = {nombre: False for nombre in botones}
     # Abrir la conexion TCP con el robot.
     robot = NiryoRobot(robot_ip_address)
     try:
         # DI son entradas y DO salidas: no necesitan set_pin_mode().
-        robot.digital_write(LUZ_DISPONIBLE, PinState.LOW)
-        robot.digital_write(LUZ_TRABAJANDO, PinState.LOW)
-        robot.digital_write(LUZ_AMARILLA, PinState.LOW)
+        for luz in LUCES:
+            robot.digital_write(luz, PinState.LOW)
         # La preparacion inicial no es una orden de los botones.
         print("Inicializando robot...", flush=True)
         # Calibrar si hace falta y detectar la herramienta instalada.
@@ -246,13 +242,13 @@ if __name__ == "__main__":
                     break
 
             # Pausa de 50 ms entre consultas para no consultar continuamente sin descanso.
-            sleep(0.05)
+            robot.wait(0.05)
 
     # Ejecutar la limpieza tambien si se produce un error o se interrumpe el programa.
     finally:
         # Intenta apagar cada luz incluso si falla otra salida.
         try:
-            for luz in (LUZ_DISPONIBLE, LUZ_TRABAJANDO, LUZ_AMARILLA):
+            for luz in LUCES:
                 try:
                     robot.digital_write(luz, PinState.LOW)
                 except Exception as error:
