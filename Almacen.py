@@ -1,20 +1,18 @@
-<<<<<<< HEAD
 # Almacen de 9 huecos: DI5 activa el guardado y el boton 1 solicita una pieza.
 from pyniryo import NiryoRobot, PoseObject, PinID, PinState
-=======
-# Almacen de 9 huecos: DI5 activa el guardado y la orden "sacar" solicita una pieza.
-from pyniryo import NiryoRobot, PoseObject, PinID, PinState
-from queue import SimpleQueue, Empty
-from threading import Thread
->>>>>>> e56390963cce24c5e4910b07cc4e6adbe4534616
 
+robot_ip_address = '10.10.12.99'
 
-robot_ip_address = '10.10.12.122'
-
-# Orientacion tomada de la practica anterior; comprobar con la nueva pieza.
-Raw = 1.257
-Pitch = 1.492
-Yaw = 1.298
+# Orientacion de recogida en la entrada, en radianes.
+Raw =-2.2893
+Pitch = 1.5329
+Yaw =2.4522
+ORIENTACION_ENTRADA = (Raw, Pitch, Yaw)
+# Orientacion anterior para colocar/recoger en el almacen y dejar en la salida.
+Raw_final = 1.257
+Pitch_final = 1.492
+Yaw_final = 1.298
+ORIENTACION_FINAL = (Raw_final, Pitch_final, Yaw_final)
 offset_aproximacion = 0.030
 altura_traslado = 0.150  # Altura absoluta de traslado: 15 cm.
 
@@ -24,7 +22,7 @@ altura_final =0.009 # Colocacion/recogida en los 9 huecos del almacen.
 altura_salida = 0.009  # Colocacion en la plataforma de salida.
 
 # Posiciones [x, y, z], en metros.
-pentrada = [-0.0082, -0.2615, altura_origen]
+pentrada = [-0.0087, -0.2626, altura_origen]
 psalida = [0.0071, 0.1925, altura_salida]
 
 # Referencia: hueco 5. Pasos medios calculados a partir de los puntos actuales.
@@ -50,13 +48,10 @@ for fila in range(3):
 # almacen[5]["ocupado"] = True
 
 SENSOR_ENTRADA = PinID.DI5
-# Cambiar a LOW si el sensor detecta la pieza con nivel bajo.
+# El sensor detecta la pieza con nivel bajo (LOW).
 PIEZA_PRESENTE = PinState.LOW
-<<<<<<< HEAD
 BOTON_SACAR = PinID.DI1  # Boton 1, igual que en Figuras2.py.
 PULSADO = PinState.HIGH
-=======
->>>>>>> e56390963cce24c5e4910b07cc4e6adbe4534616
 
 LUZ_DISPONIBLE = PinID.DO3  # Verde.
 LUZ_TRABAJANDO = PinID.DO1  # Rojo.
@@ -64,29 +59,32 @@ LUZ_AMARILLA = PinID.DO2   # Se mantiene apagada.
 LUCES = (LUZ_DISPONIBLE, LUZ_TRABAJANDO, LUZ_AMARILLA)
 
 
-def pose_con_offset(posicion, offset_z=0.0):
+def pose_con_offset(posicion, offset_z=0.0, orientacion=ORIENTACION_FINAL):
     x, y, z = posicion
-    return PoseObject(x, y, z + offset_z, Raw, Pitch, Yaw)
+    roll, pitch, yaw = orientacion
+    return PoseObject(x, y, z + offset_z, roll, pitch, yaw)
 
 
-def pose_traslado(posicion):
+def pose_traslado(posicion, orientacion=ORIENTACION_FINAL):
     x, y, _ = posicion
-    return PoseObject(x, y, altura_traslado, Raw, Pitch, Yaw)
+    roll, pitch, yaw = orientacion
+    return PoseObject(x, y, altura_traslado, roll, pitch, yaw)
 
 
-def trasladar(robot, origen, destino):
+def trasladar(robot, origen, destino, orientacion_origen=ORIENTACION_FINAL):
     # Acercarse por arriba, abrir la pinza y bajar para recoger.
     robot.set_arm_max_velocity(55)
-    robot.move(pose_con_offset(origen, offset_aproximacion))
+    robot.move(pose_con_offset(origen, offset_aproximacion, orientacion_origen))
     robot.release_with_tool()
     robot.set_arm_max_velocity(45)
-    robot.move(pose_con_offset(origen), linear=True)
+    robot.move(pose_con_offset(origen, orientacion=orientacion_origen), linear=True)
     robot.grasp_with_tool()
     robot.wait(1)
 
-    # Subir verticalmente hasta 15 cm antes de trasladar la pieza.
-    robot.move(pose_traslado(origen), linear=True)
+    # Subir hasta 15 cm conservando la orientacion de recogida.
+    robot.move(pose_traslado(origen, orientacion_origen), linear=True)
     robot.set_arm_max_velocity(55)
+    # Adoptar la orientacion final durante el traslado, antes de bajar.
     robot.move(pose_traslado(destino))
 
     # Bajar, soltar y retirarse antes de volver a home.
@@ -94,7 +92,8 @@ def trasladar(robot, origen, destino):
     robot.move(pose_con_offset(destino, offset_aproximacion), linear=True)
     robot.move(pose_con_offset(destino), linear=True)
     robot.release_with_tool()
-    robot.wait(1)
+    robot.wait(1)  
+    robot.set_arm_max_velocity(70)
     robot.move(pose_traslado(destino), linear=True)
     robot.move_to_home_pose()
     robot.grasp_with_tool()
@@ -109,30 +108,16 @@ def encender_luz(robot, luz):
 
 def disponible(robot):
     encender_luz(robot, LUZ_DISPONIBLE)
+    robot.play_sound("ready.wav", wait_end=False) #sonido robot disponible
     print("Disponible", flush=True)
 
 
 def trabajando(robot):
     encender_luz(robot, LUZ_TRABAJANDO)
+    robot.play_sound("learning_trajectory.wav", wait_end=False) #sonido robot trabajando
     print("Trabajando", flush=True)
 
 
-<<<<<<< HEAD
-=======
-def leer_terminal(ordenes):
-    # Solo lee texto; los movimientos se ejecutan en el bucle principal.
-    while True:
-        try:
-            orden = input().strip().lower()
-        except EOFError:
-            return
-        if orden == "sacar":
-            ordenes.put(orden)
-        elif orden:
-            print('Escribe "sacar" y pulsa Enter para retirar una pieza.', flush=True)
-
-
->>>>>>> e56390963cce24c5e4910b07cc4e6adbe4534616
 def buscar_hueco(ocupado):
     # Seleccionar el primer hueco con el estado solicitado, del 1 al 9.
     for numero, datos in almacen.items():
@@ -155,7 +140,7 @@ def guardar_pieza(robot):
         return False
     # Guardar automaticamente cuando DI5 detecta una pieza y hay hueco libre.
     trabajando(robot)
-    trasladar(robot, pentrada, almacen[numero]["posicion"])
+    trasladar(robot, pentrada, almacen[numero]["posicion"], ORIENTACION_ENTRADA)
     almacen[numero]["ocupado"] = True
     print(f"Pieza guardada en el hueco {numero}.", flush=True)
     disponible(robot)
@@ -184,7 +169,6 @@ if __name__ == "__main__":
         robot.update_tool()
         robot.set_arm_max_velocity(30)
         robot.move_to_home_pose()
-<<<<<<< HEAD
         print('Listo: DI5 guardado automatico. Pulsa el boton 1 (DI1) para sacar una pieza.', flush=True)
         disponible(robot)
         entrada_lista = True
@@ -200,38 +184,18 @@ if __name__ == "__main__":
                     boton_listo = True
             elif boton_listo:
                 boton_listo = False
-=======
-        print('Listo: DI5 guardado automatico. Escribe "sacar" y pulsa Enter.', flush=True)
-        disponible(robot)
-        entrada_lista = True
-        aviso_lleno = False
-        ordenes = SimpleQueue()
-        Thread(target=leer_terminal, args=(ordenes,), daemon=True).start()
-
-        while True:
-            # Consultar sin esperar texto para seguir vigilando DI5.
-            try:
-                orden = ordenes.get_nowait()
-            except Empty:
-                orden = None
-            if orden == "sacar":
->>>>>>> e56390963cce24c5e4910b07cc4e6adbe4534616
                 sacar_pieza(robot)
 
             if not hay_pieza_entrada(robot):
                 entrada_lista = True
             elif entrada_lista and buscar_hueco(False) is not None:
                 if guardar_pieza(robot):
-                    # Si sigue detectando, esperar a que se libere antes de otra recogida.
-                    entrada_lista = not hay_pieza_entrada(robot)
+                    # Permitir recoger una nueva pieza colocada durante el traslado.
+                    entrada_lista = True
 
             lleno = buscar_hueco(False) is None
             if lleno and not aviso_lleno:
-<<<<<<< HEAD
                 print('Almacen lleno (9/9). Pulsa el boton 1 para liberar un hueco.', flush=True)
-=======
-                print('Almacen lleno (9/9). Escribe "sacar" para liberar un hueco.', flush=True)
->>>>>>> e56390963cce24c5e4910b07cc4e6adbe4534616
             aviso_lleno = lleno
             robot.wait(0.05)
     finally:
