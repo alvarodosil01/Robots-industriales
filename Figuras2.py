@@ -2,7 +2,7 @@
 from pyniryo import NiryoRobot, PoseObject, PinID, PinState
 
 # Constantes, poses y movimientos incluidos en este archivo.
-robot_ip_address = '10.10.15.89'
+robot_ip_address = '10.10.15.89' 
 
 # Orientacion en radianes y alturas base en metros.
 Raw = 1.257

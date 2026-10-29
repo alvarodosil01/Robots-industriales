@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 # Almacen de 9 huecos: DI5 activa el guardado y el boton 1 solicita una pieza.
 from pyniryo import NiryoRobot, PoseObject, PinID, PinState
+=======
+# Almacen de 9 huecos: DI5 activa el guardado y la orden "sacar" solicita una pieza.
+from pyniryo import NiryoRobot, PoseObject, PinID, PinState
+from queue import SimpleQueue, Empty
+from threading import Thread
+>>>>>>> e56390963cce24c5e4910b07cc4e6adbe4534616
 
 
 robot_ip_address = '10.10.12.122'
@@ -45,8 +52,11 @@ for fila in range(3):
 SENSOR_ENTRADA = PinID.DI5
 # Cambiar a LOW si el sensor detecta la pieza con nivel bajo.
 PIEZA_PRESENTE = PinState.LOW
+<<<<<<< HEAD
 BOTON_SACAR = PinID.DI1  # Boton 1, igual que en Figuras2.py.
 PULSADO = PinState.HIGH
+=======
+>>>>>>> e56390963cce24c5e4910b07cc4e6adbe4534616
 
 LUZ_DISPONIBLE = PinID.DO3  # Verde.
 LUZ_TRABAJANDO = PinID.DO1  # Rojo.
@@ -107,6 +117,22 @@ def trabajando(robot):
     print("Trabajando", flush=True)
 
 
+<<<<<<< HEAD
+=======
+def leer_terminal(ordenes):
+    # Solo lee texto; los movimientos se ejecutan en el bucle principal.
+    while True:
+        try:
+            orden = input().strip().lower()
+        except EOFError:
+            return
+        if orden == "sacar":
+            ordenes.put(orden)
+        elif orden:
+            print('Escribe "sacar" y pulsa Enter para retirar una pieza.', flush=True)
+
+
+>>>>>>> e56390963cce24c5e4910b07cc4e6adbe4534616
 def buscar_hueco(ocupado):
     # Seleccionar el primer hueco con el estado solicitado, del 1 al 9.
     for numero, datos in almacen.items():
@@ -158,6 +184,7 @@ if __name__ == "__main__":
         robot.update_tool()
         robot.set_arm_max_velocity(30)
         robot.move_to_home_pose()
+<<<<<<< HEAD
         print('Listo: DI5 guardado automatico. Pulsa el boton 1 (DI1) para sacar una pieza.', flush=True)
         disponible(robot)
         entrada_lista = True
@@ -173,6 +200,22 @@ if __name__ == "__main__":
                     boton_listo = True
             elif boton_listo:
                 boton_listo = False
+=======
+        print('Listo: DI5 guardado automatico. Escribe "sacar" y pulsa Enter.', flush=True)
+        disponible(robot)
+        entrada_lista = True
+        aviso_lleno = False
+        ordenes = SimpleQueue()
+        Thread(target=leer_terminal, args=(ordenes,), daemon=True).start()
+
+        while True:
+            # Consultar sin esperar texto para seguir vigilando DI5.
+            try:
+                orden = ordenes.get_nowait()
+            except Empty:
+                orden = None
+            if orden == "sacar":
+>>>>>>> e56390963cce24c5e4910b07cc4e6adbe4534616
                 sacar_pieza(robot)
 
             if not hay_pieza_entrada(robot):
@@ -184,7 +227,11 @@ if __name__ == "__main__":
 
             lleno = buscar_hueco(False) is None
             if lleno and not aviso_lleno:
+<<<<<<< HEAD
                 print('Almacen lleno (9/9). Pulsa el boton 1 para liberar un hueco.', flush=True)
+=======
+                print('Almacen lleno (9/9). Escribe "sacar" para liberar un hueco.', flush=True)
+>>>>>>> e56390963cce24c5e4910b07cc4e6adbe4534616
             aviso_lleno = lleno
             robot.wait(0.05)
     finally:
